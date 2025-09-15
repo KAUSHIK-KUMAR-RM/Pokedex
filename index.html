@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pokédex App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Pokédex</h1>
+    <button id="themeToggle">🌙 Dark Mode</button>
+    <div class="search-box">
+      <input type="text" id="pokemonInput" placeholder="Enter Pokémon name or ID">
+      <button onclick="getPokemon()">Search</button>
+    </div>
+
+    <div id="pokemonCard" class="card hidden">
+      <h2 id="pokemonName"></h2>
+      <img id="pokemonImage" alt="Pokemon Image">
+      
+      <div class="info">
+        <p><strong>Type:</strong> <span id="pokemonType"></span></p>
+        <p><strong>Base Experience:</strong> <span id="pokemonExp"></span></p>
+        <p><strong>Abilities:</strong> <span id="pokemonAbilities"></span></p>
+      </div>
+
+      <h3>Stats</h3>
+      <ul id="pokemonStats"></ul>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

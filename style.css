@@ -1,0 +1,150 @@
+/* Dark Mode Button */
+#themeToggle {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: #222;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+#themeToggle:hover {
+  background: #444;
+}
+
+/* Dark Theme Styles */
+body.dark {
+  background: linear-gradient(135deg, #1e1e2f, #121212);
+  color: #eee;
+}
+
+body.dark h1 {
+  color: #ffcc70;
+  text-shadow: none;
+}
+
+body.dark .card {
+  background: #222;
+  color: #ddd;
+  box-shadow: 0 6px 12px rgba(255,255,255,0.1);
+}
+
+body.dark input {
+  background: #333;
+  color: #fff;
+  border: 2px solid #ffcc70;
+}
+
+body.dark button {
+  background: #ffcc70;
+  color: black;
+}
+
+body.dark #pokemonStats li {
+  background: #333;
+  color: #eee;
+}
+
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #ffcc70, #ff8177);
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  margin-top: 40px;
+}
+
+h1 {
+  color: white;
+  font-size: 3rem;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.search-box {
+  margin-bottom: 20px;
+}
+
+input {
+  padding: 12px;
+  width: 250px;
+  font-size: 16px;
+  border: 2px solid #ff4b5c;
+  border-radius: 8px;
+  outline: none;
+}
+
+button {
+  padding: 12px 18px;
+  margin-left: 8px;
+  font-size: 16px;
+  background: #ff4b5c;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background: #d32f2f;
+}
+
+.card {
+  margin-top: 20px;
+  padding: 25px;
+  background: white;
+  display: inline-block;
+  border-radius: 20px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  max-width: 400px;
+}
+
+.card img {
+  width: 160px;
+  height: 160px;
+  margin: 10px 0;
+}
+
+.info p {
+  margin: 8px 0;
+  font-size: 1.1rem;
+}
+
+h3 {
+  margin-top: 15px;
+  font-size: 1.3rem;
+  color: #444;
+}
+
+#pokemonStats {
+  list-style: none;
+  padding: 0;
+}
+
+
+#pokemonStats li {
+  background: #f1f1f1;
+  margin: 6px 0;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #000;
+}
+
+body.dark #pokemonStats li {
+  background: #333;
+  color: white;   /* now text becomes white */
+}
+
+.hidden {
+  display: none;
+}
