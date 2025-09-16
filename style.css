@@ -27,6 +27,10 @@ body.dark h1 {
   text-shadow: none;
 }
 
+body.dark h3 {
+  color: #fff   /* make stats heading white */
+}
+
 body.dark .card {
   background: #222;
   color: #ddd;
