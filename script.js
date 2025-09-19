@@ -15,12 +15,14 @@ async function getPokemon() {
     document.getElementById("pokemonExp").innerText = data.base_experience;
     document.getElementById("pokemonAbilities").innerText = data.abilities.map(a => a.ability.name).join(", ");
 
-    // Stats
+    // Stats with progress bars
     const statsList = document.getElementById("pokemonStats");
-    statsList.innerHTML = ""; // clear old stats
+    statsList.innerHTML = ""; 
     data.stats.forEach(stat => {
       const li = document.createElement("li");
-      li.textContent = `${stat.stat.name.toUpperCase()}: ${stat.base_stat}`;
+      const value = stat.base_stat;
+      li.innerHTML = `<span>${stat.stat.name.toUpperCase()}: ${value}</span>`;
+      li.style.setProperty("--stat-width", `${Math.min(value, 100)}%`);
       statsList.appendChild(li);
     });
 
@@ -34,7 +36,6 @@ async function getPokemon() {
 document.getElementById("themeToggle").addEventListener("click", () => {
   document.body.classList.toggle("dark");
 
-  // Change button text dynamically
   const btn = document.getElementById("themeToggle");
   if (document.body.classList.contains("dark")) {
     btn.textContent = "☀️ Light Mode";
@@ -42,4 +43,3 @@ document.getElementById("themeToggle").addEventListener("click", () => {
     btn.textContent = "🌙 Dark Mode";
   }
 });
-
