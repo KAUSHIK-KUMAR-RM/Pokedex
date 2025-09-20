@@ -1,11 +1,17 @@
 async function getPokemon() {
   const input = document.getElementById("pokemonInput").value.toLowerCase();
   const url = `https://pokeapi.co/api/v2/pokemon/${input}`;
-  
+  const loading = document.getElementById("loading");
+  const card = document.getElementById("pokemonCard");
+
+  // Show loading, hide card
+  loading.classList.remove("hidden");
+  card.classList.add("hidden");
+
   try {
     const res = await fetch(url);
     if (!res.ok) throw new Error("Pokémon not found");
-    
+
     const data = await res.json();
 
     // Basic Info
@@ -17,7 +23,7 @@ async function getPokemon() {
 
     // Stats with progress bars
     const statsList = document.getElementById("pokemonStats");
-    statsList.innerHTML = ""; 
+    statsList.innerHTML = "";
     data.stats.forEach(stat => {
       const li = document.createElement("li");
       const value = stat.base_stat;
@@ -26,9 +32,12 @@ async function getPokemon() {
       statsList.appendChild(li);
     });
 
-    document.getElementById("pokemonCard").classList.remove("hidden");
+    // Hide loading, show card
+    loading.classList.add("hidden");
+    card.classList.remove("hidden");
   } catch (error) {
     alert(error.message);
+    loading.classList.add("hidden");
   }
 }
 
