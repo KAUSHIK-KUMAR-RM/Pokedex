@@ -278,6 +278,9 @@ h1 {
   filter: drop-shadow(0 8px 15px rgba(0, 0, 0, 0.4));
   transition: all 0.3s ease;
   animation: bounce 3s ease-in-out infinite;
+  /* **CRITICAL FIX**: Prevents image distortion */
+  object-fit: contain;
+  image-rendering: high-quality;
 }
 
 @keyframes bounce {
@@ -454,6 +457,9 @@ h1 {
   filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
   transition: all 0.3s ease;
   animation: bounce 2s ease-in-out infinite;
+  /* **CRITICAL FIX**: Prevents image distortion */
+  object-fit: contain;
+  image-rendering: high-quality;
 }
 
 #pokemonImage:hover {
