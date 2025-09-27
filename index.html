@@ -1,77 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>POKÉDEX</title>
-  <link rel="icon" href="pokemon-4657023_1280.webp" type="image/x-icon">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="particles"></div>
-  <div class="container">
-    <header class="header">
-      <h1>POKÉDEX</h1>
-      <p class="subtitle">Gotta Catch 'Em All!</p>
-    </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>POKÉDEX</title>
+    <link rel="icon" href="pokemon-4657023_1280.webp" type="image/x-icon" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="particles"></div>
+    <div class="container">
+      <header class="header">
+        <h1>POKÉDEX</h1>
+        <p class="subtitle">Gotta Catch 'Em All!</p>
+      </header>
 
-    <section class="search-section">
-      <div class="search-box">
-        <input type="text" id="pokemonInput" placeholder="Enter Pokémon name or ID">
-        <button class="search-btn">Search</button>
+      <section class="search-section">
+        <div class="search-box">
+          <input
+            type="text"
+            id="pokemonInput"
+            placeholder="Enter Pokémon name or ID"
+          />
+          <button class="search-btn">Search</button>
+        </div>
+
+        <!-- New Button to access all Pokémon -->
+        <div style="text-align: center; margin-top: 20px">
+          <a href="./pages/full_pokedex.html" class="back-btn">View All Pokémon</a>
+        </div>
+      </section>
+
+      <div id="loading" class="hidden">
+        <div class="spinner"></div>
+        <p>Loading Pokémon data...</p>
       </div>
-    </section>
 
-    <div id="loading" class="hidden">
-      <div class="spinner"></div>
-      <p>Loading Pokémon data...</p>
-    </div>
+      <div id="defaultCards" class="default-cards-container">
+        <div class="default-card" data-pokemon="pikachu">
+          <h2 class="default-name">PIKACHU</h2>
+          <img
+            src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png"
+            alt="Pikachu"
+            class="default-image"
+          />
+          <div class="default-info">
+            <p><strong>Type:</strong> Electric</p>
+            <p><strong>ID:</strong> #025</p>
+            <p class="click-hint">Click to view details!</p>
+          </div>
+        </div>
 
-    <div id="defaultCards" class="default-cards-container">
-      <div class="default-card" data-pokemon="pikachu">
-        <h2 class="default-name">PIKACHU</h2>
-        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png" alt="Pikachu" class="default-image">
-        <div class="default-info">
-          <p><strong>Type:</strong> Electric</p>
-          <p><strong>ID:</strong> #025</p>
-          <p class="click-hint">Click to view details!</p>
+        <div class="default-card" data-pokemon="charizard">
+          <h2 class="default-name">CHARIZARD</h2>
+          <img
+            src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png"
+            alt="Charizard"
+            class="default-image"
+          />
+          <div class="default-info">
+            <p><strong>Type:</strong> Fire, Flying</p>
+            <p><strong>ID:</strong> #006</p>
+            <p class="click-hint">Click to view details!</p>
+          </div>
+        </div>
+
+        <div class="default-card" data-pokemon="blastoise">
+          <h2 class="default-name">BLASTOISE</h2>
+          <img
+            src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/9.png"
+            alt="Blastoise"
+            class="default-image"
+          />
+          <div class="default-info">
+            <p><strong>Type:</strong> Water</p>
+            <p><strong>ID:</strong> #009</p>
+            <p class="click-hint">Click to view details!</p>
+          </div>
         </div>
       </div>
 
-      <div class="default-card" data-pokemon="charizard">
-        <h2 class="default-name">CHARIZARD</h2>
-        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png" alt="Charizard" class="default-image">
-        <div class="default-info">
-          <p><strong>Type:</strong> Fire, Flying</p>
-          <p><strong>ID:</strong> #006</p>
-          <p class="click-hint">Click to view details!</p>
+      <div id="pokemonCard" class="hidden">
+        <h2 id="pokemonName"></h2>
+        <img id="pokemonImage" alt="Pokémon" />
+        <div class="info">
+          <p><strong>Type:</strong> <span id="pokemonType"></span></p>
+          <p><strong>Base Experience:</strong> <span id="pokemonExp"></span></p>
+          <p><strong>Abilities:</strong> <span id="pokemonAbilities"></span></p>
         </div>
-      </div>
-
-      <div class="default-card" data-pokemon="blastoise">
-        <h2 class="default-name">BLASTOISE</h2>
-        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/9.png" alt="Blastoise" class="default-image">
-        <div class="default-info">
-          <p><strong>Type:</strong> Water</p>
-          <p><strong>ID:</strong> #009</p>
-          <p class="click-hint">Click to view details!</p>
-        </div>
+        <h3>Stats</h3>
+        <ul id="pokemonStats"></ul>
+        <button id="backToDefault" class="back-btn">Back to Home</button>
       </div>
     </div>
-
-    <div id="pokemonCard" class="hidden">
-      <h2 id="pokemonName"></h2>
-      <img id="pokemonImage" alt="Pokémon">
-      <div class="info">
-        <p><strong>Type:</strong> <span id="pokemonType"></span></p>
-        <p><strong>Base Experience:</strong> <span id="pokemonExp"></span></p>
-        <p><strong>Abilities:</strong> <span id="pokemonAbilities"></span></p>
-      </div>
-      <h3>Stats</h3>
-      <ul id="pokemonStats"></ul>
-      <button id="backToDefault" class="back-btn">Back to Home</button>
-    </div>
-  </div>
-  <script src="script.js"></script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>

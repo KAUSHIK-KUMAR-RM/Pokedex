@@ -12,6 +12,9 @@ Visual Changes
 6. Improved stats display with animated progress bars and icons.
 7. Added styled error messages with emojis, suggestion buttons, and ripple effects.
 8. Optimized mobile layouts with touch-friendly adjustments, media queries, and no-zoom inputs.
+9. Added dedicated All Pokémon page with grid layout of Pokémon cards.
+10. Styled sticky topbar with brand link, search bar, and controls matching neon theme.
+11. Introduced hover and focus effects for grid cards and detail views to match existing retro styling.
 
 Technical Changes
 
@@ -23,10 +26,15 @@ Technical Changes
 6. Added network status detection (online/offline), ripple effects on buttons, and mobile optimizations (tap-highlight, touch-action).
 7. Expanded error handling: custom UIs for not found (with suggestions), empty search, timeout, no connection.
 8. Added particles creation on load and console logs for shortcuts/debugging.
+9. Created separate full_pokedex.js for handling infinite scroll, search, and detail loading.
+10. Created separate full_pokedex.css for styling the All Pokémon page, keeping code modular.
+11. Implemented batch loading of Pokémon from API with IntersectionObserver and “Load More” button fallback.
+12. Added in-page deep linking with hashes (e.g., #25 opens detail for Pikachu).
 
 Other Changes
 
 1. Added .particles div, default cards container, and error containers in HTML.
 2. Imported retro fonts (Orbitron, Press Start 2P) in CSS.
 3. Removed initial dark mode code; added new animations, keyframes, and utilities.
-
+4. Restructured project to include pages/ folder with full_pokedex.html, full_pokedex.js, and full_pokedex.css.
+5. Updated relative paths and imports to support new modular layout.
