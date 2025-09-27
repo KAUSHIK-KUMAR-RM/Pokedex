@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>POKÉDEX - All Pokémon</title>
+    <link rel="icon" href="../pokemon-4657023_1280.webp" type="image/x-icon" />
+    <meta name="theme-color" content="#0a0a0a" />
+
+    <!-- Perf: fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Page CSS (page-scoped rules live here) -->
+    <link rel="stylesheet" href="./full_pokedex.css" />
+  </head>
+  <body class="full-pokedex">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a class="brand" href="../index.html" aria-label="Back to Pokédex Home">
+          <img
+            src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png"
+            alt="Poké Ball"
+            width="28"
+            height="28"
+          />
+          <strong>POKÉDEX — All Pokémon</strong>
+        </a>
+
+        <div class="controls" role="search">
+          <input
+            id="searchInput"
+            type="search"
+            placeholder="Search name or #ID (e.g. 25)"
+            autocomplete="off"
+            aria-label="Search Pokémon by name or ID"
+          />
+          <button id="clearBtn" class="btn" title="Clear search">Clear</button>
+          <span class="pill" id="countPill" aria-live="polite">Loaded: 0</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap" id="main">
+      <!-- GRID -->
+      <div id="grid" class="grid" aria-live="polite"></div>
+
+      <!-- DETAIL AREA -->
+      <div id="loading" class="hidden" aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div>
+        <p>Loading Pokémon data...</p>
+      </div>
+
+      <section id="pokemonCard" class="hidden" aria-live="polite">
+        <h2 id="pokemonName"></h2>
+        <img id="pokemonImage" alt="Pokémon" />
+        <div class="info default-info">
+          <p><strong>Type:</strong> <span id="pokemonType"></span></p>
+          <p><strong>Base Experience:</strong> <span id="pokemonExp"></span></p>
+          <p><strong>Abilities:</strong> <span id="pokemonAbilities"></span></p>
+        </div>
+        <h3>Stats</h3>
+        <ul id="pokemonStats"></ul>
+        <button id="backToGrid" class="back-btn">Back to Grid</button>
+      </section>
+
+      <div class="footer-actions">
+        <button id="loadMore" class="btn">Load more</button>
+      </div>
+
+      <p class="status" id="status" aria-live="polite"></p>
+    </main>
+
+    <noscript>
+      <p style="text-align: center; color: #fff; margin: 1rem">
+        This page requires JavaScript to load Pokémon.
+      </p>
+    </noscript>
+
+    <!-- Page JS -->
+    <script src="./full_pokedex.js" defer></script>
+  </body>
+</html>
