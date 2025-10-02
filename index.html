@@ -80,18 +80,53 @@
         </div>
       </div>
 
-      <div id="pokemonCard" class="hidden">
-        <h2 id="pokemonName"></h2>
-        <img id="pokemonImage" alt="Pokémon" />
-        <div class="info">
-          <p><strong>Type:</strong> <span id="pokemonType"></span></p>
-          <p><strong>Base Experience:</strong> <span id="pokemonExp"></span></p>
-          <p><strong>Abilities:</strong> <span id="pokemonAbilities"></span></p>
+      <!-- HORIZONTAL DETAIL CARD -->
+      <section id="pokemonCard" class="hidden">
+        <div class="pokemon-left">
+          <h2 id="pokemonName"></h2>
+          <img id="pokemonImage" alt="Pokémon" />
         </div>
-        <h3>Stats</h3>
-        <ul id="pokemonStats"></ul>
-        <button id="backToDefault" class="back-btn">Back to Home</button>
-      </div>
+        
+        <div class="pokemon-right">
+          <div class="info-grid">
+            <div class="info-item">
+              <strong>Type</strong>
+              <span id="pokemonType"></span>
+            </div>
+            <div class="info-item">
+              <strong>Base Experience</strong>
+              <span id="pokemonExp"></span>
+            </div>
+            <div class="info-item">
+              <strong>Height</strong>
+              <span id="pokemonHeight"></span>
+            </div>
+            <div class="info-item">
+              <strong>Weight</strong>
+              <span id="pokemonWeight"></span>
+            </div>
+            <div class="info-item" style="grid-column: 1 / -1;">
+              <strong>Abilities</strong>
+              <span id="pokemonAbilities"></span>
+            </div>
+          </div>
+
+          <div class="stats-section">
+            <h3>Base Stats</h3>
+            <ul id="pokemonStats"></ul>
+          </div>
+        </div>
+
+        <div class="back-btn-container">
+          <button id="backToDefault" class="back-btn">Back to Home</button>
+        </div>
+      </section>
+
+      <!-- EVOLUTION CARD -->
+      <section id="evolutionCard" class="hidden">
+        <h3>Evolution Chain</h3>
+        <div id="evolutionChain"></div>
+      </section>
     </div>
     <script src="script.js"></script>
   </body>

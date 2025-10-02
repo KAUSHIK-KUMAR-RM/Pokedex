@@ -1,6 +1,22 @@
 // Pokemon database with IDs (first 1010 Pokemon as of 2024)
 const POKEMON_IDS = Array.from({length: 1010}, (_, i) => i + 1);
 
+// Helper functions
+function capitalizeName(name) {
+  return name.split('-').map(word => 
+    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+  ).join(' ');
+}
+
+function idFromUrl(url) {
+  const parts = url.split("/").filter(Boolean);
+  return Number(parts[parts.length - 1]);
+}
+
+function artworkUrl(id) {
+  return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+}
+
 // Function to find similar Pokemon IDs
 function findSimilarIds(input) {
   let processedInput = input;
@@ -37,12 +53,47 @@ function findSimilarIds(input) {
   return suggestions.slice(0, 6);
 }
 
+// Fetch evolution chain
+async function fetchEvolutionChain(speciesUrl) {
+  try {
+    const speciesRes = await fetch(speciesUrl);
+    if (!speciesRes.ok) return null;
+    const speciesData = await speciesRes.json();
+
+    if (!speciesData.evolution_chain?.url) return null;
+
+    const evoRes = await fetch(speciesData.evolution_chain.url);
+    if (!evoRes.ok) return null;
+    const evoData = await evoRes.json();
+
+    const chain = [];
+    let current = evoData.chain;
+
+    while (current) {
+      const id = idFromUrl(current.species.url);
+      chain.push({
+        id,
+        name: current.species.name,
+        img: artworkUrl(id),
+      });
+      current = current.evolves_to[0];
+    }
+
+    return chain.length > 1 ? chain : null;
+  } catch (err) {
+    console.error("Evolution fetch error:", err);
+    return null;
+  }
+}
+
 // Function to display Pokemon not found message with suggestions
 function showPokemonNotFound(input) {
   const defaultCards = document.getElementById("defaultCards");
   const pokemonCard = document.getElementById("pokemonCard");
+  const evolutionCard = document.getElementById("evolutionCard");
   
   defaultCards.classList.add("hidden");
+  evolutionCard.classList.add("hidden");
   
   const suggestions = findSimilarIds(input);
   
@@ -113,11 +164,13 @@ async function getPokemon() {
   const url = `https://pokeapi.co/api/v2/pokemon/${input}`;
   const loading = document.getElementById("loading");
   const card = document.getElementById("pokemonCard");
+  const evolutionCard = document.getElementById("evolutionCard");
   const defaultCards = document.getElementById("defaultCards");
 
   defaultCards.classList.add("hidden");
   loading.classList.remove("hidden");
   card.classList.add("hidden");
+  evolutionCard.classList.add("hidden");
 
   try {
     const controller = new AbortController();
@@ -144,7 +197,6 @@ async function getPokemon() {
     document.getElementById("pokemonName").innerText = capitalizeName(data.name);
     
     const imageElement = document.getElementById("pokemonImage");
-    // **VERIFIED IMAGE LOGIC**: Prioritizes high-quality official artwork
     imageElement.src = data.sprites.other?.['official-artwork']?.front_default ||
                       data.sprites.front_default || 
                       data.sprites.front_shiny || 
@@ -154,9 +206,11 @@ async function getPokemon() {
       this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjY2NjIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==';
     };
     
-    document.getElementById("pokemonType").innerText = data.types.map(t => t.type.name).join(", ");
+    document.getElementById("pokemonType").innerText = data.types.map(t => capitalizeName(t.type.name)).join(", ");
     document.getElementById("pokemonExp").innerText = data.base_experience || "N/A";
-    document.getElementById("pokemonAbilities").innerText = data.abilities.map(a => a.ability.name).join(", ");
+    document.getElementById("pokemonAbilities").innerText = data.abilities.map(a => capitalizeName(a.ability.name)).join(", ");
+    document.getElementById("pokemonHeight").innerText = `${(data.height / 10).toFixed(1)} m`;
+    document.getElementById("pokemonWeight").innerText = `${(data.weight / 10).toFixed(1)} kg`;
 
     const statsList = document.getElementById("pokemonStats");
     statsList.innerHTML = "";
@@ -165,27 +219,54 @@ async function getPokemon() {
       data.stats.forEach((stat, index) => {
         const li = document.createElement("li");
         const value = stat.base_stat;
-        const percentage = Math.min((value / 150) * 100, 100);
-        li.innerHTML = `<span>${stat.stat.name.toUpperCase()}: ${value}</span>`;
+        const percentage = Math.min((value / 200) * 100, 100);
+        li.innerHTML = `
+          <span class="stat-name">${capitalizeName(stat.stat.name)}</span>
+          <span class="stat-value">${value}</span>
+        `;
         li.style.setProperty("--stat-width", "0%");
         statsList.appendChild(li);
 
         setTimeout(() => {
           li.style.setProperty("--stat-width", `${percentage}%`);
-        }, index * 200 + 500);
+        }, index * 100 + 200);
       });
     }
 
-    setTimeout(() => {
-      loading.classList.add("hidden");
-      card.classList.remove("hidden");
-      
-      if (window.innerWidth <= 768) {
-        setTimeout(() => {
-          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 300);
-      }
-    }, 300);
+    loading.classList.add("hidden");
+    card.classList.remove("hidden");
+
+    // Fetch evolution chain
+    const evolutionData = await fetchEvolutionChain(data.species.url);
+    if (evolutionData) {
+      const evolutionChain = document.getElementById("evolutionChain");
+      evolutionChain.innerHTML = "";
+      evolutionData.forEach((evo, idx) => {
+        const evoItem = document.createElement("div");
+        evoItem.className = "evolution-item";
+        evoItem.innerHTML = `
+          <img src="${evo.img}" alt="${evo.name}" />
+          <p>${capitalizeName(evo.name)}</p>
+          <span class="evo-id">#${String(evo.id).padStart(3, "0")}</span>
+        `;
+        evoItem.addEventListener("click", () => loadDefaultPokemon(evo.id));
+        evolutionChain.appendChild(evoItem);
+
+        if (idx < evolutionData.length - 1) {
+          const arrow = document.createElement("div");
+          arrow.className = "evolution-arrow";
+          arrow.textContent = "→";
+          evolutionChain.appendChild(arrow);
+        }
+      });
+      evolutionCard.classList.remove("hidden");
+    }
+
+    if (window.innerWidth <= 768) {
+      setTimeout(() => {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 300);
+    }
 
   } catch (error) {
     loading.classList.add("hidden");
@@ -208,11 +289,13 @@ async function loadDefaultPokemon(pokemonName) {
 
   const loading = document.getElementById("loading");
   const card = document.getElementById("pokemonCard");
+  const evolutionCard = document.getElementById("evolutionCard");
   const defaultCards = document.getElementById("defaultCards");
 
   defaultCards.classList.add("hidden");
   loading.classList.remove("hidden");
   card.classList.add("hidden");
+  evolutionCard.classList.add("hidden");
 
   try {
     const controller = new AbortController();
@@ -236,7 +319,6 @@ async function loadDefaultPokemon(pokemonName) {
     document.getElementById("pokemonName").innerText = capitalizeName(data.name);
     
     const imageElement = document.getElementById("pokemonImage");
-    // **VERIFIED IMAGE LOGIC**: Prioritizes high-quality official artwork
     imageElement.src = data.sprites.other?.['official-artwork']?.front_default ||
                       data.sprites.front_default || 
                       data.sprites.front_shiny || 
@@ -246,9 +328,11 @@ async function loadDefaultPokemon(pokemonName) {
       this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjY2NjIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==';
     };
     
-    document.getElementById("pokemonType").innerText = data.types.map(t => t.type.name).join(", ");
+    document.getElementById("pokemonType").innerText = data.types.map(t => capitalizeName(t.type.name)).join(", ");
     document.getElementById("pokemonExp").innerText = data.base_experience || "N/A";
-    document.getElementById("pokemonAbilities").innerText = data.abilities.map(a => a.ability.name).join(", ");
+    document.getElementById("pokemonAbilities").innerText = data.abilities.map(a => capitalizeName(a.ability.name)).join(", ");
+    document.getElementById("pokemonHeight").innerText = `${(data.height / 10).toFixed(1)} m`;
+    document.getElementById("pokemonWeight").innerText = `${(data.weight / 10).toFixed(1)} kg`;
 
     const statsList = document.getElementById("pokemonStats");
     statsList.innerHTML = "";
@@ -257,27 +341,54 @@ async function loadDefaultPokemon(pokemonName) {
       data.stats.forEach((stat, index) => {
         const li = document.createElement("li");
         const value = stat.base_stat;
-        const percentage = Math.min((value / 150) * 100, 100);
-        li.innerHTML = `<span>${stat.stat.name.toUpperCase()}: ${value}</span>`;
+        const percentage = Math.min((value / 200) * 100, 100);
+        li.innerHTML = `
+          <span class="stat-name">${capitalizeName(stat.stat.name)}</span>
+          <span class="stat-value">${value}</span>
+        `;
         li.style.setProperty("--stat-width", "0%");
         statsList.appendChild(li);
 
         setTimeout(() => {
           li.style.setProperty("--stat-width", `${percentage}%`);
-        }, index * 200 + 500);
+        }, index * 100 + 200);
       });
     }
 
-    setTimeout(() => {
-      loading.classList.add("hidden");
-      card.classList.remove("hidden");
-      
-      if (window.innerWidth <= 768) {
-        setTimeout(() => {
-          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 300);
-      }
-    }, 300);
+    loading.classList.add("hidden");
+    card.classList.remove("hidden");
+
+    // Fetch evolution chain
+    const evolutionData = await fetchEvolutionChain(data.species.url);
+    if (evolutionData) {
+      const evolutionChain = document.getElementById("evolutionChain");
+      evolutionChain.innerHTML = "";
+      evolutionData.forEach((evo, idx) => {
+        const evoItem = document.createElement("div");
+        evoItem.className = "evolution-item";
+        evoItem.innerHTML = `
+          <img src="${evo.img}" alt="${evo.name}" />
+          <p>${capitalizeName(evo.name)}</p>
+          <span class="evo-id">#${String(evo.id).padStart(3, "0")}</span>
+        `;
+        evoItem.addEventListener("click", () => loadDefaultPokemon(evo.id));
+        evolutionChain.appendChild(evoItem);
+
+        if (idx < evolutionData.length - 1) {
+          const arrow = document.createElement("div");
+          arrow.className = "evolution-arrow";
+          arrow.textContent = "→";
+          evolutionChain.appendChild(arrow);
+        }
+      });
+      evolutionCard.classList.remove("hidden");
+    }
+
+    if (window.innerWidth <= 768) {
+      setTimeout(() => {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 300);
+    }
 
   } catch (error) {
     loading.classList.add("hidden");
@@ -293,9 +404,11 @@ async function loadDefaultPokemon(pokemonName) {
 // Function to return to default cards view
 function showDefaultCards() {
   const card = document.getElementById("pokemonCard");
+  const evolutionCard = document.getElementById("evolutionCard");
   const defaultCards = document.getElementById("defaultCards");
   
   card.classList.add("hidden");
+  evolutionCard.classList.add("hidden");
   defaultCards.classList.remove("hidden");
   
   document.getElementById("pokemonInput").value = '';
@@ -352,9 +465,11 @@ function createRipple(event) {
 // Helper functions for error handling
 function showEmptySearchError() {
   const pokemonCard = document.getElementById("pokemonCard");
+  const evolutionCard = document.getElementById("evolutionCard");
   const defaultCards = document.getElementById("defaultCards");
   
   defaultCards.classList.add("hidden");
+  evolutionCard.classList.add("hidden");
   pokemonCard.innerHTML = `
     <div class="error-container">
       <h2 class="error-title">⚠️ Empty Search</h2>
@@ -371,9 +486,11 @@ function showEmptySearchError() {
 
 function showTimeoutError() {
   const pokemonCard = document.getElementById("pokemonCard");
+  const evolutionCard = document.getElementById("evolutionCard");
   const defaultCards = document.getElementById("defaultCards");
   
   defaultCards.classList.add("hidden");
+  evolutionCard.classList.add("hidden");
   pokemonCard.innerHTML = `
     <div class="error-container">
       <h2 class="error-title">⏰ Request Timeout</h2>
@@ -382,13 +499,6 @@ function showTimeoutError() {
     </div>
   `;
   pokemonCard.classList.remove("hidden");
-}
-
-// Utility function to capitalize Pokemon names properly
-function capitalizeName(name) {
-  return name.split('-').map(word => 
-    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-  ).join(' ');
 }
 
 // Initialize event listeners
@@ -472,9 +582,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
   window.addEventListener('offline', function() {
     const pokemonCard = document.getElementById("pokemonCard");
+    const evolutionCard = document.getElementById("evolutionCard");
     const defaultCards = document.getElementById("defaultCards");
     
     defaultCards.classList.add("hidden");
+    evolutionCard.classList.add("hidden");
     pokemonCard.innerHTML = `
       <div class="error-container">
         <h2 class="error-title">📡 No Connection</h2>

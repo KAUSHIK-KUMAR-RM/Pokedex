@@ -27,7 +27,6 @@ body {
   }
 }
 
-/* Top bar */
 .topbar {
   position: sticky;
   top: 0;
@@ -126,7 +125,6 @@ body {
   padding: 0 16px;
 }
 
-/* Grid cards */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -199,7 +197,6 @@ body {
   margin-top: 16px;
 }
 
-/* Loader */
 #loading {
   text-align: center;
   margin: 24px 0;
@@ -227,35 +224,47 @@ body {
   font-weight: bold;
 }
 
-/* Detail card (matches your main page styling) */
+/* HORIZONTAL DETAIL CARD */
 #pokemonCard {
   background: linear-gradient(
-    145deg,
-    rgba(0, 0, 0, 0.6),
-    rgba(187, 134, 252, 0.1)
+    135deg,
+    rgba(0, 0, 0, 0.7),
+    rgba(187, 134, 252, 0.15)
   );
   backdrop-filter: blur(15px);
   border: 3px solid #bb86fc;
   border-radius: 25px;
   padding: 32px;
-  margin: 0 auto 24px;
-  max-width: 560px;
+  margin: 0 auto 20px;
+  max-width: 1000px;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 32px;
+  align-items: start;
 }
+
+.pokemon-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
 #pokemonName {
   font-family: "Press Start 2P", cursive;
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   color: #bb86fc;
   text-align: center;
-  margin-bottom: 16px;
   text-shadow: 2px 2px 0 #000;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
 }
+
 #pokemonImage {
-  width: 200px;
-  height: 200px;
-  margin: 12px auto 8px;
+  width: 240px;
+  height: 240px;
   display: block;
   filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
   transition: 0.25s;
@@ -263,6 +272,7 @@ body {
   object-fit: contain;
   image-rendering: high-quality;
 }
+
 @keyframes bounce {
   0%,
   20%,
@@ -278,79 +288,84 @@ body {
     transform: translateY(-4px);
   }
 }
-.info {
-  margin: 24px 0;
+
+.pokemon-right {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
-.info p,
-.default-info p {
-  margin: 15px 0;
-  font-size: 1.1rem;
-  color: #fff;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 12px 20px;
-  border-radius: 15px;
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.info-item {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 12px 16px;
+  border-radius: 12px;
   border-left: 4px solid #03dac6;
   transition: all 0.3s ease;
 }
 
-.info p:hover,
-.default-info p:hover {
+.info-item:hover {
   background: rgba(3, 218, 198, 0.2);
-  transform: translateX(10px);
+  transform: translateX(5px);
   border-left-color: #bb86fc;
 }
 
-h3 {
-  font-family: "Press Start 2P", cursive;
-  font-size: 1.1rem;
-  color: #cf6679;
-  text-align: center;
-  margin: 18px 0 12px;
-  text-shadow: 1px 1px 0 #000;
+.info-item strong {
+  display: block;
+  color: #03dac6;
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
-.default-info p {
-  margin: 8px 0;
+
+.info-item span {
   font-size: 1rem;
   color: #fff;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 12px 20px;
-  border-radius: 15px;
-  border-left: 4px solid #03dac6;
-  transition: all 0.3s ease;
 }
 
-.default-info p:hover {
-  background: rgba(3, 218, 198, 0.2);
-  transform: translateX(10px);
-  border-left-color: #bb86fc;
+.stats-section {
+  margin-top: 8px;
 }
 
-.default-info strong {
-  color: #03dac6;
+.stats-section h3 {
+  font-family: "Press Start 2P", cursive;
+  font-size: 1rem;
+  color: #cf6679;
+  margin-bottom: 12px;
+  text-shadow: 1px 1px 0 #000;
 }
 
 #pokemonStats {
   list-style: none;
   padding: 0;
+  display: grid;
+  gap: 8px;
 }
+
 #pokemonStats li {
   position: relative;
   background: rgba(0, 0, 0, 0.4);
   border: 2px solid #333;
-  border-radius: 14px;
-  margin: 10px 0;
-  padding: 12px;
-  font-weight: 700;
-  color: #fff;
+  border-radius: 12px;
+  padding: 10px 16px;
   overflow: hidden;
-  transition: all 0.3s ease; /* ← missing */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
 }
 
-/* ← missing */
 #pokemonStats li:hover {
   border-color: #03dac6;
   transform: scale(1.02);
 }
+
 #pokemonStats li::after {
   content: "";
   position: absolute;
@@ -358,56 +373,204 @@ h3 {
   left: 0;
   height: 100%;
   background: linear-gradient(90deg, #cf6679, #bb86fc, #03dac6);
-  border-radius: 12px;
+  border-radius: 10px;
   width: var(--stat-width, 0%);
   z-index: 0;
   transition: width 1s ease;
-  opacity: 0.8;
+  opacity: 0.5;
 }
-#pokemonStats li span {
+
+#pokemonStats li .stat-name,
+#pokemonStats li .stat-value {
   position: relative;
   z-index: 1;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+#pokemonStats li .stat-name {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#pokemonStats li .stat-value {
+  font-size: 1rem;
+  color: #03dac6;
+}
+
+.back-btn-container {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+/* EVOLUTION CARD */
+#evolutionCard {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.7),
+    rgba(3, 218, 198, 0.15)
+  );
+  backdrop-filter: blur(15px);
+  border: 3px solid #03dac6;
+  border-radius: 25px;
+  padding: 32px;
+  margin: 0 auto 24px;
+  max-width: 1000px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+#evolutionCard h3 {
+  font-family: "Press Start 2P", cursive;
+  font-size: 1.2rem;
+  color: #03dac6;
+  text-align: center;
+  margin-bottom: 24px;
+  text-shadow: 2px 2px 0 #000;
+}
+
+#evolutionChain {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.evolution-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 2px solid #bb86fc55;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 140px;
+}
+
+.evolution-item:hover {
+  transform: translateY(-5px) scale(1.05);
+  border-color: #03dac6;
+  box-shadow: 0 10px 25px rgba(3, 218, 198, 0.3);
+}
+
+.evolution-item img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.5));
+}
+
+.evolution-item p {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #fff;
+  text-transform: capitalize;
+  text-shadow: 1px 1px 2px #000;
+}
+
+.evolution-item .evo-id {
+  font-size: 0.8rem;
+  color: #03dac6;
+}
+
+.evolution-arrow {
+  font-size: 2.5rem;
+  color: #bb86fc;
+  font-weight: 900;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
 }
 
 .hidden {
   display: none;
 }
 
+@media (max-width: 768px) {
+  #pokemonCard {
+    grid-template-columns: 1fr;
+    padding: 24px 20px;
+    gap: 20px;
+  }
+
+  .pokemon-left {
+    margin: 0 auto;
+  }
+
+  #pokemonName {
+    font-size: 1.2rem;
+  }
+
+  #pokemonImage {
+    width: 180px;
+    height: 180px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #evolutionCard {
+    padding: 24px 16px;
+  }
+
+  #evolutionChain {
+    gap: 12px;
+  }
+
+  .evolution-item {
+    min-width: 110px;
+    padding: 12px;
+  }
+
+  .evolution-item img {
+    width: 90px;
+    height: 90px;
+  }
+
+  .evolution-arrow {
+    font-size: 2rem;
+  }
+}
+
 @media (max-width: 560px) {
   .grid {
     grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
   }
-}
-@media (max-width: 768px) {
+
   .wrap {
     padding: 0 12px;
-  }
-  #pokemonCard {
-    padding: 24px 20px;
-  }
-  #pokemonName {
-    font-size: 1.3rem;
-  }
-  #pokemonImage {
-    width: 160px;
-    height: 160px;
   }
 }
 
 :root {
-  /* height of your sticky header (tweak if you change the topbar size) */
   --topbar-h: 72px;
 }
 
-/* keep content from hiding under the sticky top bar when scrolling */
 html {
   scroll-behavior: smooth;
   scroll-padding-top: var(--topbar-h);
 }
 
-/* when we scroll the detail into view, leave space for the top bar */
-#pokemonCard {
+#pokemonCard,
+#evolutionCard {
   scroll-margin-top: calc(var(--topbar-h) + 16px);
 }
