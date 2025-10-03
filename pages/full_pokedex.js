@@ -1,6 +1,7 @@
 "use strict";
 
 const API_BASE = "https://pokeapi.co/api/v2/pokemon";
+const SPECIES_BASE = "https://pokeapi.co/api/v2/pokemon-species";
 const PAGE_SIZE = 60;
 
 let nextUrl = `${API_BASE}?limit=${PAGE_SIZE}&offset=0`;
@@ -16,12 +17,16 @@ const countPill = document.getElementById("countPill");
 
 const loadingBox = document.getElementById("loading");
 const detail = document.getElementById("pokemonCard");
+const evolutionCard = document.getElementById("evolutionCard");
 const dName = document.getElementById("pokemonName");
 const dImg = document.getElementById("pokemonImage");
 const dType = document.getElementById("pokemonType");
 const dExp = document.getElementById("pokemonExp");
 const dAbilities = document.getElementById("pokemonAbilities");
 const dStats = document.getElementById("pokemonStats");
+const dHeight = document.getElementById("pokemonHeight");
+const dWeight = document.getElementById("pokemonWeight");
+const evolutionChain = document.getElementById("evolutionChain");
 
 function idFromUrl(url) {
   const parts = url.split("/").filter(Boolean);
@@ -43,7 +48,7 @@ function render(items) {
   for (const p of items) {
     const card = document.createElement("a");
     card.className = "card";
-    card.href = `#${p.id}`; // in-page deep link
+    card.href = `#${p.id}`;
     card.dataset.id = String(p.id);
     card.setAttribute(
       "aria-label",
@@ -111,7 +116,39 @@ function applySearch(term) {
     : "No results in loaded batch. Load more to expand results or clear search.";
 }
 
-let detailController; // at top-level
+let detailController;
+
+async function fetchEvolutionChain(speciesUrl) {
+  try {
+    const speciesRes = await fetch(speciesUrl);
+    if (!speciesRes.ok) return null;
+    const speciesData = await speciesRes.json();
+    
+    if (!speciesData.evolution_chain?.url) return null;
+    
+    const evoRes = await fetch(speciesData.evolution_chain.url);
+    if (!evoRes.ok) return null;
+    const evoData = await evoRes.json();
+    
+    const chain = [];
+    let current = evoData.chain;
+    
+    while (current) {
+      const id = idFromUrl(current.species.url);
+      chain.push({
+        id,
+        name: current.species.name,
+        img: artworkUrl(id)
+      });
+      current = current.evolves_to[0];
+    }
+    
+    return chain.length > 1 ? chain : null;
+  } catch (err) {
+    console.error("Evolution fetch error:", err);
+    return null;
+  }
+}
 
 async function openDetail(nameOrId) {
   try {
@@ -122,6 +159,7 @@ async function openDetail(nameOrId) {
     document.querySelector(".footer-actions").classList.add("hidden");
     statusEl.textContent = "";
     detail.classList.add("hidden");
+    evolutionCard.classList.add("hidden");
     loadingBox.classList.remove("hidden");
 
     const timeout = setTimeout(() => detailController.abort(), 15000);
@@ -141,28 +179,58 @@ async function openDetail(nameOrId) {
     dImg.onerror = function () {
       this.style.opacity = 0.5;
     };
-    dType.textContent = (data.types || []).map((t) => t.type.name).join(", ");
+    dType.textContent = (data.types || []).map((t) => capitalizeName(t.type.name)).join(", ");
     dExp.textContent = data.base_experience || "N/A";
     dAbilities.textContent = (data.abilities || [])
-      .map((a) => a.ability.name)
+      .map((a) => capitalizeName(a.ability.name))
       .join(", ");
+    dHeight.textContent = `${(data.height / 10).toFixed(1)} m`;
+    dWeight.textContent = `${(data.weight / 10).toFixed(1)} kg`;
 
     dStats.innerHTML = "";
     (data.stats || []).forEach((stat, i) => {
       const li = document.createElement("li");
       const value = stat.base_stat;
-      const pct = Math.min((value / 150) * 100, 100);
-      li.innerHTML = `<span>${stat.stat.name.toUpperCase()}: ${value}</span>`;
+      const pct = Math.min((value / 200) * 100, 100);
+      li.innerHTML = `
+        <span class="stat-name">${capitalizeName(stat.stat.name)}</span>
+        <span class="stat-value">${value}</span>
+      `;
       li.style.setProperty("--stat-width", "0%");
       dStats.appendChild(li);
       setTimeout(
         () => li.style.setProperty("--stat-width", `${pct}%`),
-        i * 200 + 300
+        i * 100 + 200
       );
     });
 
     loadingBox.classList.add("hidden");
     detail.classList.remove("hidden");
+
+    // Fetch evolution chain
+    const evolutionData = await fetchEvolutionChain(data.species.url);
+    if (evolutionData) {
+      evolutionChain.innerHTML = "";
+      evolutionData.forEach((evo, idx) => {
+        const evoItem = document.createElement("div");
+        evoItem.className = "evolution-item";
+        evoItem.innerHTML = `
+          <img src="${evo.img}" alt="${evo.name}" />
+          <p>${capitalizeName(evo.name)}</p>
+          <span class="evo-id">#${String(evo.id).padStart(3, "0")}</span>
+        `;
+        evoItem.addEventListener("click", () => openDetail(evo.id));
+        evolutionChain.appendChild(evoItem);
+        
+        if (idx < evolutionData.length - 1) {
+          const arrow = document.createElement("div");
+          arrow.className = "evolution-arrow";
+          arrow.textContent = "→";
+          evolutionChain.appendChild(arrow);
+        }
+      });
+      evolutionCard.classList.remove("hidden");
+    }
 
     if (location.hash !== `#${data.id}`) location.hash = `#${data.id}`;
     setTimeout(() => {
@@ -193,6 +261,7 @@ async function openDetail(nameOrId) {
 
 function closeDetail() {
   detail.classList.add("hidden");
+  evolutionCard.classList.add("hidden");
   grid.classList.remove("hidden");
   document.querySelector(".footer-actions").classList.remove("hidden");
   statusEl.textContent = "";
@@ -205,9 +274,8 @@ function closeDetail() {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-// Events
 loadBtn.addEventListener("click", fetchNext);
-// util
+
 const debounce = (fn, ms = 200) => {
   let t;
   return (...args) => {
@@ -216,7 +284,6 @@ const debounce = (fn, ms = 200) => {
   };
 };
 
-// Events
 searchInput.addEventListener(
   "input",
   debounce((e) => {
@@ -237,7 +304,6 @@ clearBtn.addEventListener("click", () => {
   searchInput.focus();
 });
 
-// Card click → open detail (event delegation)
 grid.addEventListener("click", (e) => {
   const a = e.target.closest("a.card");
   if (!a) return;
@@ -246,24 +312,20 @@ grid.addEventListener("click", (e) => {
   openDetail(id);
 });
 
-// Back button in detail (event delegation)
 document.addEventListener("click", (e) => {
   if (e.target && e.target.id === "backToGrid") closeDetail();
 });
 
-// Keyboard: ESC closes detail
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && !detail.classList.contains("hidden")) closeDetail();
 });
 
-// Hash routing
 window.addEventListener("hashchange", () => {
   const id = location.hash.replace("#", "").trim();
   if (id) openDetail(id);
   else if (!detail.classList.contains("hidden")) closeDetail();
 });
 
-// Infinite scroll
 const io = new IntersectionObserver(
   (entries) => {
     entries.forEach((entry) => {
@@ -274,9 +336,7 @@ const io = new IntersectionObserver(
 );
 io.observe(loadBtn);
 
-// Boot
 fetchNext();
-// Open deep link directly on load if present
 if (location.hash) {
   const idOnLoad = location.hash.replace("#", "").trim();
   if (idOnLoad) openDetail(idOnLoad);
