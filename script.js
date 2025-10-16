@@ -241,6 +241,7 @@ async function getPokemon() {
     if (evolutionData) {
       const evolutionChain = document.getElementById("evolutionChain");
       evolutionChain.innerHTML = "";
+      const isMobile = window.innerWidth <= 768;
       evolutionData.forEach((evo, idx) => {
         const evoItem = document.createElement("div");
         evoItem.className = "evolution-item";
@@ -255,7 +256,12 @@ async function getPokemon() {
         if (idx < evolutionData.length - 1) {
           const arrow = document.createElement("div");
           arrow.className = "evolution-arrow";
-          arrow.textContent = "→";
+          if (isMobile) {
+            arrow.className += " vertical";
+            arrow.textContent = "↓";
+          } else {
+            arrow.textContent = "→";
+          }
           evolutionChain.appendChild(arrow);
         }
       });
@@ -363,6 +369,7 @@ async function loadDefaultPokemon(pokemonName) {
     if (evolutionData) {
       const evolutionChain = document.getElementById("evolutionChain");
       evolutionChain.innerHTML = "";
+      const isMobile = window.innerWidth <= 768;
       evolutionData.forEach((evo, idx) => {
         const evoItem = document.createElement("div");
         evoItem.className = "evolution-item";
@@ -377,7 +384,12 @@ async function loadDefaultPokemon(pokemonName) {
         if (idx < evolutionData.length - 1) {
           const arrow = document.createElement("div");
           arrow.className = "evolution-arrow";
-          arrow.textContent = "→";
+          if (isMobile) {
+            arrow.className += " vertical";
+            arrow.textContent = "↓";
+          } else {
+            arrow.textContent = "→";
+          }
           evolutionChain.appendChild(arrow);
         }
       });
@@ -461,6 +473,33 @@ function createRipple(event) {
     ripple.remove();
   }, 600);
 }
+
+// Function to update evolution arrows based on screen size
+function updateEvolutionArrows() {
+  const isMobile = window.innerWidth <= 768;
+  const arrows = document.querySelectorAll(".evolution-arrow");
+  arrows.forEach((arrow) => {
+    if (isMobile) {
+      arrow.textContent = "↓";
+      arrow.classList.add("vertical");
+    } else {
+      arrow.textContent = "→";
+      arrow.classList.remove("vertical");
+    }
+  });
+}
+
+// Debounce function
+const debounce = (fn, ms = 200) => {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+};
+
+// Update arrows on window resize
+window.addEventListener("resize", debounce(updateEvolutionArrows, 150));
 
 // Helper functions for error handling
 function showEmptySearchError() {

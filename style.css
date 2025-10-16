@@ -592,6 +592,14 @@ h1 {
   font-weight: 900;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   animation: pulse 2s ease-in-out infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.evolution-arrow.vertical {
+  font-size: 2rem;
+  transform: none;
 }
 
 /* ----------------- ERROR CONTAINER ----------------- */
@@ -793,6 +801,8 @@ h1 {
 
   #evolutionChain {
     gap: 12px;
+    flex-direction: column;
+    align-items: center;
   }
 
   .evolution-item {
@@ -807,6 +817,11 @@ h1 {
 
   .evolution-arrow {
     font-size: 2rem;
+    transform: none;
+  }
+
+  .evolution-arrow.vertical {
+    transform: none;
   }
 
   .search-btn,
