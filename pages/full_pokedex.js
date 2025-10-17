@@ -211,6 +211,7 @@ async function openDetail(nameOrId) {
     const evolutionData = await fetchEvolutionChain(data.species.url);
     if (evolutionData) {
       evolutionChain.innerHTML = "";
+      const isMobile = window.innerWidth <= 768;
       evolutionData.forEach((evo, idx) => {
         const evoItem = document.createElement("div");
         evoItem.className = "evolution-item";
@@ -225,7 +226,12 @@ async function openDetail(nameOrId) {
         if (idx < evolutionData.length - 1) {
           const arrow = document.createElement("div");
           arrow.className = "evolution-arrow";
-          arrow.textContent = "→";
+          if (isMobile) {
+            arrow.className += " vertical";
+            arrow.textContent = "↓";
+          } else {
+            arrow.textContent = "→";
+          }
           evolutionChain.appendChild(arrow);
         }
       });
@@ -274,7 +280,19 @@ function closeDetail() {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-loadBtn.addEventListener("click", fetchNext);
+function updateEvolutionArrows() {
+  const isMobile = window.innerWidth <= 768;
+  const arrows = evolutionChain.querySelectorAll(".evolution-arrow");
+  arrows.forEach((arrow) => {
+    if (isMobile) {
+      arrow.textContent = "↓";
+      arrow.classList.add("vertical");
+    } else {
+      arrow.textContent = "→";
+      arrow.classList.remove("vertical");
+    }
+  });
+}
 
 const debounce = (fn, ms = 200) => {
   let t;
@@ -283,6 +301,11 @@ const debounce = (fn, ms = 200) => {
     t = setTimeout(() => fn(...args), ms);
   };
 };
+
+loadBtn.addEventListener("click", fetchNext);
+
+// Update arrows on window resize
+window.addEventListener("resize", debounce(updateEvolutionArrows, 150));
 
 searchInput.addEventListener(
   "input",
