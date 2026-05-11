@@ -1,5 +1,6 @@
 // Pokemon database with IDs (first 1010 Pokemon as of 2024)
 const POKEMON_IDS = Array.from({length: 1010}, (_, i) => i + 1);
+const POKEMON_CARD_TEMPLATE = document.getElementById("pokemonCard")?.innerHTML || "";
 
 // Helper functions
 function capitalizeName(name) {
@@ -15,6 +16,13 @@ function idFromUrl(url) {
 
 function artworkUrl(id) {
   return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+}
+
+function restorePokemonCardLayout() {
+  const pokemonCard = document.getElementById("pokemonCard");
+  if (pokemonCard && !document.getElementById("pokemonName")) {
+    pokemonCard.innerHTML = POKEMON_CARD_TEMPLATE;
+  }
 }
 
 // Function to find similar Pokemon IDs
@@ -167,6 +175,7 @@ async function getPokemon() {
   const evolutionCard = document.getElementById("evolutionCard");
   const defaultCards = document.getElementById("defaultCards");
 
+  restorePokemonCardLayout();
   defaultCards.classList.add("hidden");
   loading.classList.remove("hidden");
   card.classList.add("hidden");
@@ -298,6 +307,7 @@ async function loadDefaultPokemon(pokemonName) {
   const evolutionCard = document.getElementById("evolutionCard");
   const defaultCards = document.getElementById("defaultCards");
 
+  restorePokemonCardLayout();
   defaultCards.classList.add("hidden");
   loading.classList.remove("hidden");
   card.classList.add("hidden");
